@@ -14,7 +14,10 @@ update: ## run update after you run create_migration
 create_migration: ## Generates a sql migration file based on the defined Ent models locally. Usage is `make create_migration name=Foobar`
 	@go run -mod=mod entgo.io/ent/cmd/ent new $(name)
 	$(MAKE) update
+
+create_schema: ## Generate only ent schema  `make create_schema name=Foobar`
+	@go run -mod=mod entgo.io/ent/cmd/ent new $(name)
 check:
 
 
-.PHONY:run down gen update create_migration
+.PHONY:run down gen update create_migration create_schema

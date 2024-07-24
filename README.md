@@ -1,17 +1,7 @@
 - To install dep `go get .`
 
-Set the following env data
+Set the following env data please check the .env.example rename it to .env
 
-```
-HOST=host
-PORT=port
-DB_USER=user
-DB_PASSWORD=pass
-DB_NAME=db
-DB_HOST=localhost
-DB_POST=5432
-DB_SSLMODE=disable
-```
 
 To run server, use `air` for live reload 
 - ensure make binary is installed

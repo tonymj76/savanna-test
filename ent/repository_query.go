@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/tonymj76/savannah/ent/commit"
+	"github.com/tonymj76/savannah/ent/gitcommit"
 	"github.com/tonymj76/savannah/ent/predicate"
 	"github.com/tonymj76/savannah/ent/repository"
 )
@@ -19,11 +19,11 @@ import (
 // RepositoryQuery is the builder for querying Repository entities.
 type RepositoryQuery struct {
 	config
-	ctx         *QueryContext
-	order       []repository.OrderOption
-	inters      []Interceptor
-	predicates  []predicate.Repository
-	withCommits *CommitQuery
+	ctx            *QueryContext
+	order          []repository.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Repository
+	withGitCommits *GitCommitQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,9 +60,9 @@ func (rq *RepositoryQuery) Order(o ...repository.OrderOption) *RepositoryQuery {
 	return rq
 }
 
-// QueryCommits chains the current query on the "commits" edge.
-func (rq *RepositoryQuery) QueryCommits() *CommitQuery {
-	query := (&CommitClient{config: rq.config}).Query()
+// QueryGitCommits chains the current query on the "gitCommits" edge.
+func (rq *RepositoryQuery) QueryGitCommits() *GitCommitQuery {
+	query := (&GitCommitClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -73,8 +73,8 @@ func (rq *RepositoryQuery) QueryCommits() *CommitQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(repository.Table, repository.FieldID, selector),
-			sqlgraph.To(commit.Table, commit.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, repository.CommitsTable, repository.CommitsColumn),
+			sqlgraph.To(gitcommit.Table, gitcommit.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repository.GitCommitsTable, repository.GitCommitsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,26 +269,26 @@ func (rq *RepositoryQuery) Clone() *RepositoryQuery {
 		return nil
 	}
 	return &RepositoryQuery{
-		config:      rq.config,
-		ctx:         rq.ctx.Clone(),
-		order:       append([]repository.OrderOption{}, rq.order...),
-		inters:      append([]Interceptor{}, rq.inters...),
-		predicates:  append([]predicate.Repository{}, rq.predicates...),
-		withCommits: rq.withCommits.Clone(),
+		config:         rq.config,
+		ctx:            rq.ctx.Clone(),
+		order:          append([]repository.OrderOption{}, rq.order...),
+		inters:         append([]Interceptor{}, rq.inters...),
+		predicates:     append([]predicate.Repository{}, rq.predicates...),
+		withGitCommits: rq.withGitCommits.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
 	}
 }
 
-// WithCommits tells the query-builder to eager-load the nodes that are connected to
-// the "commits" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RepositoryQuery) WithCommits(opts ...func(*CommitQuery)) *RepositoryQuery {
-	query := (&CommitClient{config: rq.config}).Query()
+// WithGitCommits tells the query-builder to eager-load the nodes that are connected to
+// the "gitCommits" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RepositoryQuery) WithGitCommits(opts ...func(*GitCommitQuery)) *RepositoryQuery {
+	query := (&GitCommitClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	rq.withCommits = query
+	rq.withGitCommits = query
 	return rq
 }
 
@@ -371,7 +371,7 @@ func (rq *RepositoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*R
 		nodes       = []*Repository{}
 		_spec       = rq.querySpec()
 		loadedTypes = [1]bool{
-			rq.withCommits != nil,
+			rq.withGitCommits != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -392,17 +392,17 @@ func (rq *RepositoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*R
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := rq.withCommits; query != nil {
-		if err := rq.loadCommits(ctx, query, nodes,
-			func(n *Repository) { n.Edges.Commits = []*Commit{} },
-			func(n *Repository, e *Commit) { n.Edges.Commits = append(n.Edges.Commits, e) }); err != nil {
+	if query := rq.withGitCommits; query != nil {
+		if err := rq.loadGitCommits(ctx, query, nodes,
+			func(n *Repository) { n.Edges.GitCommits = []*GitCommit{} },
+			func(n *Repository, e *GitCommit) { n.Edges.GitCommits = append(n.Edges.GitCommits, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (rq *RepositoryQuery) loadCommits(ctx context.Context, query *CommitQuery, nodes []*Repository, init func(*Repository), assign func(*Repository, *Commit)) error {
+func (rq *RepositoryQuery) loadGitCommits(ctx context.Context, query *GitCommitQuery, nodes []*Repository, init func(*Repository), assign func(*Repository, *GitCommit)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Repository)
 	for i := range nodes {
@@ -413,21 +413,21 @@ func (rq *RepositoryQuery) loadCommits(ctx context.Context, query *CommitQuery, 
 		}
 	}
 	query.withFKs = true
-	query.Where(predicate.Commit(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(repository.CommitsColumn), fks...))
+	query.Where(predicate.GitCommit(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(repository.GitCommitsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.repository_commits
+		fk := n.repository_git_commits
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "repository_commits" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "repository_git_commits" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "repository_commits" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "repository_git_commits" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

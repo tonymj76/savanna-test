@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/tonymj76/savannah/ent/commit"
+	"github.com/tonymj76/savannah/ent/gitcommit"
 	"github.com/tonymj76/savannah/ent/repository"
 )
 
@@ -74,7 +74,7 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			commit.Table:     commit.ValidColumn,
+			gitcommit.Table:  gitcommit.ValidColumn,
 			repository.Table: repository.ValidColumn,
 		})
 	})

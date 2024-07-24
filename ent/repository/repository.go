@@ -32,17 +32,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeCommits holds the string denoting the commits edge name in mutations.
-	EdgeCommits = "commits"
+	// EdgeGitCommits holds the string denoting the gitcommits edge name in mutations.
+	EdgeGitCommits = "gitCommits"
 	// Table holds the table name of the repository in the database.
 	Table = "repositories"
-	// CommitsTable is the table that holds the commits relation/edge.
-	CommitsTable = "commits"
-	// CommitsInverseTable is the table name for the Commit entity.
-	// It exists in this package in order to avoid circular dependency with the "commit" package.
-	CommitsInverseTable = "commits"
-	// CommitsColumn is the table column denoting the commits relation/edge.
-	CommitsColumn = "repository_commits"
+	// GitCommitsTable is the table that holds the gitCommits relation/edge.
+	GitCommitsTable = "git_commits"
+	// GitCommitsInverseTable is the table name for the GitCommit entity.
+	// It exists in this package in order to avoid circular dependency with the "gitcommit" package.
+	GitCommitsInverseTable = "git_commits"
+	// GitCommitsColumn is the table column denoting the gitCommits relation/edge.
+	GitCommitsColumn = "repository_git_commits"
 )
 
 // Columns holds all SQL columns for repository fields.
@@ -69,17 +69,6 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
-
-var (
-	// NameValidator is a validator for the "name" field. It is called by the builders before save.
-	NameValidator func(string) error
-	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
-	DescriptionValidator func(string) error
-	// URLValidator is a validator for the "URL" field. It is called by the builders before save.
-	URLValidator func(string) error
-	// LanguageValidator is a validator for the "language" field. It is called by the builders before save.
-	LanguageValidator func(string) error
-)
 
 // OrderOption defines the ordering options for the Repository queries.
 type OrderOption func(*sql.Selector)
@@ -139,23 +128,23 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByCommitsCount orders the results by commits count.
-func ByCommitsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByGitCommitsCount orders the results by gitCommits count.
+func ByGitCommitsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newCommitsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newGitCommitsStep(), opts...)
 	}
 }
 
-// ByCommits orders the results by commits terms.
-func ByCommits(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByGitCommits orders the results by gitCommits terms.
+func ByGitCommits(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCommitsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newGitCommitsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newCommitsStep() *sqlgraph.Step {
+func newGitCommitsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CommitsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CommitsTable, CommitsColumn),
+		sqlgraph.To(GitCommitsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, GitCommitsTable, GitCommitsColumn),
 	)
 }

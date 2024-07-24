@@ -45,20 +45,20 @@ type Repository struct {
 
 // RepositoryEdges holds the relations/edges for other nodes in the graph.
 type RepositoryEdges struct {
-	// Commits holds the value of the commits edge.
-	Commits []*Commit `json:"commits,omitempty"`
+	// GitCommits holds the value of the gitCommits edge.
+	GitCommits []*GitCommit `json:"gitCommits,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// CommitsOrErr returns the Commits value or an error if the edge
+// GitCommitsOrErr returns the GitCommits value or an error if the edge
 // was not loaded in eager-loading.
-func (e RepositoryEdges) CommitsOrErr() ([]*Commit, error) {
+func (e RepositoryEdges) GitCommitsOrErr() ([]*GitCommit, error) {
 	if e.loadedTypes[0] {
-		return e.Commits, nil
+		return e.GitCommits, nil
 	}
-	return nil, &NotLoadedError{edge: "commits"}
+	return nil, &NotLoadedError{edge: "gitCommits"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -166,9 +166,9 @@ func (r *Repository) Value(name string) (ent.Value, error) {
 	return r.selectValues.Get(name)
 }
 
-// QueryCommits queries the "commits" edge of the Repository entity.
-func (r *Repository) QueryCommits() *CommitQuery {
-	return NewRepositoryClient(r.config).QueryCommits(r)
+// QueryGitCommits queries the "gitCommits" edge of the Repository entity.
+func (r *Repository) QueryGitCommits() *GitCommitQuery {
+	return NewRepositoryClient(r.config).QueryGitCommits(r)
 }
 
 // Update returns a builder for updating this Repository.

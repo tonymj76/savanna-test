@@ -605,21 +605,21 @@ func UpdatedAtLTE(v time.Time) predicate.Repository {
 	return predicate.Repository(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// HasCommits applies the HasEdge predicate on the "commits" edge.
-func HasCommits() predicate.Repository {
+// HasGitCommits applies the HasEdge predicate on the "gitCommits" edge.
+func HasGitCommits() predicate.Repository {
 	return predicate.Repository(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CommitsTable, CommitsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, GitCommitsTable, GitCommitsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCommitsWith applies the HasEdge predicate on the "commits" edge with a given conditions (other predicates).
-func HasCommitsWith(preds ...predicate.Commit) predicate.Repository {
+// HasGitCommitsWith applies the HasEdge predicate on the "gitCommits" edge with a given conditions (other predicates).
+func HasGitCommitsWith(preds ...predicate.GitCommit) predicate.Repository {
 	return predicate.Repository(func(s *sql.Selector) {
-		step := newCommitsStep()
+		step := newGitCommitsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -16,19 +16,16 @@ func (h *RestService) HandleWebhook(c *gin.Context) {
 		return
 	}
 
-	// Process the webhook payload
-	// Save updates to the database
+	config.JSON(c, "Repo data saved successfully", http.StatusOK, payload)
 }
 
 func (h *RestService) FetchAndSaveRepoData(c *gin.Context) {
-	owner := c.Param("owner")
-	repo := c.Param("repo")
 
-	var dataCommits []*ent.Commit
+	var dataCommits []*ent.GitCommit
 
-	commits, err := h.Service.FetchCommits(owner, repo)
+	commits, err := h.Service.FetchCommits("")
 	for _, commit := range commits {
-		saveCommit, err := h.DB.Commit.Create().
+		saveCommit, err := h.DB.GitCommit.Create().
 			SetURL(commit.Url).
 			SetDate(time.Now()).
 			SetAuthor(commit.Author).
@@ -47,7 +44,7 @@ func (h *RestService) FetchAndSaveRepoData(c *gin.Context) {
 		return
 	}
 
-	repoInfo, err := h.Service.FetchRepoInfo(owner, repo)
+	repoInfo, err := h.Service.FetchRepoInfo()
 	if err != nil {
 		log.Println("Error fetching repo info:", err)
 		config.JSON(c, "Failed to fetch repo info", http.StatusInternalServerError, err)
@@ -67,7 +64,7 @@ func (h *RestService) FetchAndSaveRepoData(c *gin.Context) {
 		SetUpdatedAt(updateAt).
 		SetWatchersCount(repoInfo.WatchersCount).
 		SetStarCount(repoInfo.StarCount).
-		AddCommits(dataCommits...).
+		AddGitCommits(dataCommits...).
 		Save(c)
 
 	if err != nil {

@@ -10,11 +10,11 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/tonymj76/savannah/ent/commit"
+	"github.com/tonymj76/savannah/ent/gitcommit"
 )
 
-// Commit is the model entity for the Commit schema.
-type Commit struct {
+// GitCommit is the model entity for the GitCommit schema.
+type GitCommit struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -23,25 +23,25 @@ type Commit struct {
 	// URL holds the value of the "url" field.
 	URL string `json:"url,omitempty"`
 	// Date holds the value of the "date" field.
-	Date               time.Time `json:"date,omitempty"`
-	repository_commits *int
-	selectValues       sql.SelectValues
+	Date                   time.Time `json:"date,omitempty"`
+	repository_git_commits *int
+	selectValues           sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Commit) scanValues(columns []string) ([]any, error) {
+func (*GitCommit) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case commit.FieldAuthor:
+		case gitcommit.FieldAuthor:
 			values[i] = new([]byte)
-		case commit.FieldID:
+		case gitcommit.FieldID:
 			values[i] = new(sql.NullInt64)
-		case commit.FieldURL:
+		case gitcommit.FieldURL:
 			values[i] = new(sql.NullString)
-		case commit.FieldDate:
+		case gitcommit.FieldDate:
 			values[i] = new(sql.NullTime)
-		case commit.ForeignKeys[0]: // repository_commits
+		case gitcommit.ForeignKeys[0]: // repository_git_commits
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -51,93 +51,93 @@ func (*Commit) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Commit fields.
-func (c *Commit) assignValues(columns []string, values []any) error {
+// to the GitCommit fields.
+func (gc *GitCommit) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case commit.FieldID:
+		case gitcommit.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			c.ID = int(value.Int64)
-		case commit.FieldAuthor:
+			gc.ID = int(value.Int64)
+		case gitcommit.FieldAuthor:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field author", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.Author); err != nil {
+				if err := json.Unmarshal(*value, &gc.Author); err != nil {
 					return fmt.Errorf("unmarshal field author: %w", err)
 				}
 			}
-		case commit.FieldURL:
+		case gitcommit.FieldURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field url", values[i])
 			} else if value.Valid {
-				c.URL = value.String
+				gc.URL = value.String
 			}
-		case commit.FieldDate:
+		case gitcommit.FieldDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field date", values[i])
 			} else if value.Valid {
-				c.Date = value.Time
+				gc.Date = value.Time
 			}
-		case commit.ForeignKeys[0]:
+		case gitcommit.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field repository_commits", value)
+				return fmt.Errorf("unexpected type %T for edge-field repository_git_commits", value)
 			} else if value.Valid {
-				c.repository_commits = new(int)
-				*c.repository_commits = int(value.Int64)
+				gc.repository_git_commits = new(int)
+				*gc.repository_git_commits = int(value.Int64)
 			}
 		default:
-			c.selectValues.Set(columns[i], values[i])
+			gc.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Commit.
+// Value returns the ent.Value that was dynamically selected and assigned to the GitCommit.
 // This includes values selected through modifiers, order, etc.
-func (c *Commit) Value(name string) (ent.Value, error) {
-	return c.selectValues.Get(name)
+func (gc *GitCommit) Value(name string) (ent.Value, error) {
+	return gc.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this Commit.
-// Note that you need to call Commit.Unwrap() before calling this method if this Commit
+// Update returns a builder for updating this GitCommit.
+// Note that you need to call GitCommit.Unwrap() before calling this method if this GitCommit
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (c *Commit) Update() *CommitUpdateOne {
-	return NewCommitClient(c.config).UpdateOne(c)
+func (gc *GitCommit) Update() *GitCommitUpdateOne {
+	return NewGitCommitClient(gc.config).UpdateOne(gc)
 }
 
-// Unwrap unwraps the Commit entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the GitCommit entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (c *Commit) Unwrap() *Commit {
-	_tx, ok := c.config.driver.(*txDriver)
+func (gc *GitCommit) Unwrap() *GitCommit {
+	_tx, ok := gc.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Commit is not a transactional entity")
+		panic("ent: GitCommit is not a transactional entity")
 	}
-	c.config.driver = _tx.drv
-	return c
+	gc.config.driver = _tx.drv
+	return gc
 }
 
 // String implements the fmt.Stringer.
-func (c *Commit) String() string {
+func (gc *GitCommit) String() string {
 	var builder strings.Builder
-	builder.WriteString("Commit(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
+	builder.WriteString("GitCommit(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", gc.ID))
 	builder.WriteString("author=")
-	builder.WriteString(fmt.Sprintf("%v", c.Author))
+	builder.WriteString(fmt.Sprintf("%v", gc.Author))
 	builder.WriteString(", ")
 	builder.WriteString("url=")
-	builder.WriteString(c.URL)
+	builder.WriteString(gc.URL)
 	builder.WriteString(", ")
 	builder.WriteString("date=")
-	builder.WriteString(c.Date.Format(time.ANSIC))
+	builder.WriteString(gc.Date.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Commits is a parsable slice of Commit.
-type Commits []*Commit
+// GitCommits is a parsable slice of GitCommit.
+type GitCommits []*GitCommit

@@ -14,10 +14,10 @@ type Repository struct {
 // Fields of the Repository.
 func (Repository) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").NotEmpty().Unique(),
-		field.String("description").NotEmpty(),
-		field.String("URL").NotEmpty(),
-		field.String("language").NotEmpty(),
+		field.String("name"),
+		field.String("description"),
+		field.String("URL"),
+		field.String("language"),
 		field.Int("open_issues_count"),
 		field.Int("watchers_count"),
 		field.Int("star_count"),
@@ -30,6 +30,6 @@ func (Repository) Fields() []ent.Field {
 // Edges of the Repository.
 func (Repository) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("commits", Commit.Type),
+		edge.To("gitCommits", GitCommit.Type),
 	}
 }

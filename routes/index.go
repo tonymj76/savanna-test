@@ -8,6 +8,7 @@ import (
 func SetRouter(rs *handlers.RestService) *gin.Engine {
 	router := gin.Default()
 	apiGroupRoute := router.Group("/api")
-	apiGroupRoute.Group("fetch/:owner/:repo", rs.FetchAndSaveRepoData)
+	apiGroupRoute.GET("/fetch/:owner/:repo", rs.FetchAndSaveRepoData)
+	apiGroupRoute.GET("/", rs.HandleWebhook)
 	return router
 }

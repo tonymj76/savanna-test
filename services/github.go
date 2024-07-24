@@ -10,7 +10,7 @@ import (
 	"github.com/tonymj76/savannah/models"
 )
 
-var baseURL = config.GetEnv("github_baseURL", "https://api.github.com/repos")
+var URL = config.GetEnv("github_baseURL", "https://api.github.com/repos/tonymj76/savanna-test")
 
 type GitHubService struct {
 	Client *http.Client
@@ -24,9 +24,8 @@ func NewGitHubService() *GitHubService {
 
 // FetchRepoInfo Implement the logic to fetch repository information from GitHub API
 // and return the models.Repository struct
-func (s *GitHubService) FetchRepoInfo(owner, repo string) (*models.Repository, error) {
-	url := fmt.Sprintf("%s/%s/%s", baseURL, owner, repo)
-	resp, err := s.Client.Get(url)
+func (s *GitHubService) FetchRepoInfo() (*models.Repository, error) {
+	resp, err := s.Client.Get(URL)
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +39,8 @@ func (s *GitHubService) FetchRepoInfo(owner, repo string) (*models.Repository, e
 	return repoInfo, nil
 }
 
-func (s *GitHubService) FetchCommits(owner, repo string) (models.Commits, error) {
-	url := fmt.Sprintf("%s/%s/%s/commits", baseURL, owner, repo)
+func (s *GitHubService) FetchCommits(since string) (models.Commits, error) {
+	url := fmt.Sprintf("%s/commits?since=%s", URL, since)
 	resp, err := s.Client.Get(url)
 	if err != nil {
 		return nil, err
@@ -52,6 +51,5 @@ func (s *GitHubService) FetchCommits(owner, repo string) (models.Commits, error)
 	if err := json.NewDecoder(resp.Body).Decode(&commits); err != nil {
 		return nil, err
 	}
-
 	return commits, nil
 }

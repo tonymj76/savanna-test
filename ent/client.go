@@ -15,7 +15,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/tonymj76/savannah/ent/commit"
+	"github.com/tonymj76/savannah/ent/gitcommit"
 	"github.com/tonymj76/savannah/ent/repository"
 )
 
@@ -24,8 +24,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Commit is the client for interacting with the Commit builders.
-	Commit *CommitClient
+	// GitCommit is the client for interacting with the GitCommit builders.
+	GitCommit *GitCommitClient
 	// Repository is the client for interacting with the Repository builders.
 	Repository *RepositoryClient
 }
@@ -39,7 +39,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Commit = NewCommitClient(c.config)
+	c.GitCommit = NewGitCommitClient(c.config)
 	c.Repository = NewRepositoryClient(c.config)
 }
 
@@ -133,7 +133,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:        ctx,
 		config:     cfg,
-		Commit:     NewCommitClient(cfg),
+		GitCommit:  NewGitCommitClient(cfg),
 		Repository: NewRepositoryClient(cfg),
 	}, nil
 }
@@ -154,7 +154,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:        ctx,
 		config:     cfg,
-		Commit:     NewCommitClient(cfg),
+		GitCommit:  NewGitCommitClient(cfg),
 		Repository: NewRepositoryClient(cfg),
 	}, nil
 }
@@ -162,7 +162,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Commit.
+//		GitCommit.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -184,22 +184,22 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Commit.Use(hooks...)
+	c.GitCommit.Use(hooks...)
 	c.Repository.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Commit.Intercept(interceptors...)
+	c.GitCommit.Intercept(interceptors...)
 	c.Repository.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *CommitMutation:
-		return c.Commit.mutate(ctx, m)
+	case *GitCommitMutation:
+		return c.GitCommit.mutate(ctx, m)
 	case *RepositoryMutation:
 		return c.Repository.mutate(ctx, m)
 	default:
@@ -207,107 +207,107 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	}
 }
 
-// CommitClient is a client for the Commit schema.
-type CommitClient struct {
+// GitCommitClient is a client for the GitCommit schema.
+type GitCommitClient struct {
 	config
 }
 
-// NewCommitClient returns a client for the Commit from the given config.
-func NewCommitClient(c config) *CommitClient {
-	return &CommitClient{config: c}
+// NewGitCommitClient returns a client for the GitCommit from the given config.
+func NewGitCommitClient(c config) *GitCommitClient {
+	return &GitCommitClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `commit.Hooks(f(g(h())))`.
-func (c *CommitClient) Use(hooks ...Hook) {
-	c.hooks.Commit = append(c.hooks.Commit, hooks...)
+// A call to `Use(f, g, h)` equals to `gitcommit.Hooks(f(g(h())))`.
+func (c *GitCommitClient) Use(hooks ...Hook) {
+	c.hooks.GitCommit = append(c.hooks.GitCommit, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `commit.Intercept(f(g(h())))`.
-func (c *CommitClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Commit = append(c.inters.Commit, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `gitcommit.Intercept(f(g(h())))`.
+func (c *GitCommitClient) Intercept(interceptors ...Interceptor) {
+	c.inters.GitCommit = append(c.inters.GitCommit, interceptors...)
 }
 
-// Create returns a builder for creating a Commit entity.
-func (c *CommitClient) Create() *CommitCreate {
-	mutation := newCommitMutation(c.config, OpCreate)
-	return &CommitCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a GitCommit entity.
+func (c *GitCommitClient) Create() *GitCommitCreate {
+	mutation := newGitCommitMutation(c.config, OpCreate)
+	return &GitCommitCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Commit entities.
-func (c *CommitClient) CreateBulk(builders ...*CommitCreate) *CommitCreateBulk {
-	return &CommitCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of GitCommit entities.
+func (c *GitCommitClient) CreateBulk(builders ...*GitCommitCreate) *GitCommitCreateBulk {
+	return &GitCommitCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *CommitClient) MapCreateBulk(slice any, setFunc func(*CommitCreate, int)) *CommitCreateBulk {
+func (c *GitCommitClient) MapCreateBulk(slice any, setFunc func(*GitCommitCreate, int)) *GitCommitCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &CommitCreateBulk{err: fmt.Errorf("calling to CommitClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &GitCommitCreateBulk{err: fmt.Errorf("calling to GitCommitClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*CommitCreate, rv.Len())
+	builders := make([]*GitCommitCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &CommitCreateBulk{config: c.config, builders: builders}
+	return &GitCommitCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Commit.
-func (c *CommitClient) Update() *CommitUpdate {
-	mutation := newCommitMutation(c.config, OpUpdate)
-	return &CommitUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for GitCommit.
+func (c *GitCommitClient) Update() *GitCommitUpdate {
+	mutation := newGitCommitMutation(c.config, OpUpdate)
+	return &GitCommitUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *CommitClient) UpdateOne(co *Commit) *CommitUpdateOne {
-	mutation := newCommitMutation(c.config, OpUpdateOne, withCommit(co))
-	return &CommitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *GitCommitClient) UpdateOne(gc *GitCommit) *GitCommitUpdateOne {
+	mutation := newGitCommitMutation(c.config, OpUpdateOne, withGitCommit(gc))
+	return &GitCommitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *CommitClient) UpdateOneID(id int) *CommitUpdateOne {
-	mutation := newCommitMutation(c.config, OpUpdateOne, withCommitID(id))
-	return &CommitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *GitCommitClient) UpdateOneID(id int) *GitCommitUpdateOne {
+	mutation := newGitCommitMutation(c.config, OpUpdateOne, withGitCommitID(id))
+	return &GitCommitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Commit.
-func (c *CommitClient) Delete() *CommitDelete {
-	mutation := newCommitMutation(c.config, OpDelete)
-	return &CommitDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for GitCommit.
+func (c *GitCommitClient) Delete() *GitCommitDelete {
+	mutation := newGitCommitMutation(c.config, OpDelete)
+	return &GitCommitDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *CommitClient) DeleteOne(co *Commit) *CommitDeleteOne {
-	return c.DeleteOneID(co.ID)
+func (c *GitCommitClient) DeleteOne(gc *GitCommit) *GitCommitDeleteOne {
+	return c.DeleteOneID(gc.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *CommitClient) DeleteOneID(id int) *CommitDeleteOne {
-	builder := c.Delete().Where(commit.ID(id))
+func (c *GitCommitClient) DeleteOneID(id int) *GitCommitDeleteOne {
+	builder := c.Delete().Where(gitcommit.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &CommitDeleteOne{builder}
+	return &GitCommitDeleteOne{builder}
 }
 
-// Query returns a query builder for Commit.
-func (c *CommitClient) Query() *CommitQuery {
-	return &CommitQuery{
+// Query returns a query builder for GitCommit.
+func (c *GitCommitClient) Query() *GitCommitQuery {
+	return &GitCommitQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeCommit},
+		ctx:    &QueryContext{Type: TypeGitCommit},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Commit entity by its id.
-func (c *CommitClient) Get(ctx context.Context, id int) (*Commit, error) {
-	return c.Query().Where(commit.ID(id)).Only(ctx)
+// Get returns a GitCommit entity by its id.
+func (c *GitCommitClient) Get(ctx context.Context, id int) (*GitCommit, error) {
+	return c.Query().Where(gitcommit.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *CommitClient) GetX(ctx context.Context, id int) *Commit {
+func (c *GitCommitClient) GetX(ctx context.Context, id int) *GitCommit {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -316,27 +316,27 @@ func (c *CommitClient) GetX(ctx context.Context, id int) *Commit {
 }
 
 // Hooks returns the client hooks.
-func (c *CommitClient) Hooks() []Hook {
-	return c.hooks.Commit
+func (c *GitCommitClient) Hooks() []Hook {
+	return c.hooks.GitCommit
 }
 
 // Interceptors returns the client interceptors.
-func (c *CommitClient) Interceptors() []Interceptor {
-	return c.inters.Commit
+func (c *GitCommitClient) Interceptors() []Interceptor {
+	return c.inters.GitCommit
 }
 
-func (c *CommitClient) mutate(ctx context.Context, m *CommitMutation) (Value, error) {
+func (c *GitCommitClient) mutate(ctx context.Context, m *GitCommitMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&CommitCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&GitCommitCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&CommitUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&GitCommitUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&CommitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&GitCommitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&CommitDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&GitCommitDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Commit mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown GitCommit mutation op: %q", m.Op())
 	}
 }
 
@@ -448,15 +448,15 @@ func (c *RepositoryClient) GetX(ctx context.Context, id int) *Repository {
 	return obj
 }
 
-// QueryCommits queries the commits edge of a Repository.
-func (c *RepositoryClient) QueryCommits(r *Repository) *CommitQuery {
-	query := (&CommitClient{config: c.config}).Query()
+// QueryGitCommits queries the gitCommits edge of a Repository.
+func (c *RepositoryClient) QueryGitCommits(r *Repository) *GitCommitQuery {
+	query := (&GitCommitClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(repository.Table, repository.FieldID, id),
-			sqlgraph.To(commit.Table, commit.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, repository.CommitsTable, repository.CommitsColumn),
+			sqlgraph.To(gitcommit.Table, gitcommit.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repository.GitCommitsTable, repository.GitCommitsColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -492,9 +492,9 @@ func (c *RepositoryClient) mutate(ctx context.Context, m *RepositoryMutation) (V
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Commit, Repository []ent.Hook
+		GitCommit, Repository []ent.Hook
 	}
 	inters struct {
-		Commit, Repository []ent.Interceptor
+		GitCommit, Repository []ent.Interceptor
 	}
 )

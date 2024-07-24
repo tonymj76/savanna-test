@@ -13,20 +13,18 @@ func JSON(c *gin.Context, message string, status int, data any) {
 	switch data.(type) {
 	case error:
 		responseData = gin.H{
-			"message": message,
-			"errors":  data.(error).Error(),
-			"status":  http.StatusText(status),
+			"message":    message,
+			"errors":     data.(error).Error(),
+			"status":     http.StatusText(status),
+			"statusCode": status,
 		}
 	default:
 		responseData = gin.H{
-			"message": message,
-			"data":    data,
-			"status":  http.StatusText(status),
+			"message":    message,
+			"data":       data,
+			"status":     http.StatusText(status),
+			"statusCode": status,
 		}
 	}
 	c.JSON(status, responseData)
-}
-
-func HtmlRes(c *gin.Context, template string, status int, data gin.H) {
-	c.HTML(status, template, data)
 }

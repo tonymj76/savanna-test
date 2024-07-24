@@ -9,16 +9,16 @@ import (
 	"github.com/tonymj76/savannah/ent"
 )
 
-// The CommitFunc type is an adapter to allow the use of ordinary
-// function as Commit mutator.
-type CommitFunc func(context.Context, *ent.CommitMutation) (ent.Value, error)
+// The GitCommitFunc type is an adapter to allow the use of ordinary
+// function as GitCommit mutator.
+type GitCommitFunc func(context.Context, *ent.GitCommitMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f CommitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.CommitMutation); ok {
+func (f GitCommitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.GitCommitMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CommitMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GitCommitMutation", m)
 }
 
 // The RepositoryFunc type is an adapter to allow the use of ordinary

@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/tonymj76/savannah/ent/commit"
+	"github.com/tonymj76/savannah/ent/gitcommit"
 	"github.com/tonymj76/savannah/ent/repository"
 )
 
@@ -81,19 +81,19 @@ func (rc *RepositoryCreate) SetUpdatedAt(t time.Time) *RepositoryCreate {
 	return rc
 }
 
-// AddCommitIDs adds the "commits" edge to the Commit entity by IDs.
-func (rc *RepositoryCreate) AddCommitIDs(ids ...int) *RepositoryCreate {
-	rc.mutation.AddCommitIDs(ids...)
+// AddGitCommitIDs adds the "gitCommits" edge to the GitCommit entity by IDs.
+func (rc *RepositoryCreate) AddGitCommitIDs(ids ...int) *RepositoryCreate {
+	rc.mutation.AddGitCommitIDs(ids...)
 	return rc
 }
 
-// AddCommits adds the "commits" edges to the Commit entity.
-func (rc *RepositoryCreate) AddCommits(c ...*Commit) *RepositoryCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddGitCommits adds the "gitCommits" edges to the GitCommit entity.
+func (rc *RepositoryCreate) AddGitCommits(g ...*GitCommit) *RepositoryCreate {
+	ids := make([]int, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
 	}
-	return rc.AddCommitIDs(ids...)
+	return rc.AddGitCommitIDs(ids...)
 }
 
 // Mutation returns the RepositoryMutation object of the builder.
@@ -133,34 +133,14 @@ func (rc *RepositoryCreate) check() error {
 	if _, ok := rc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Repository.name"`)}
 	}
-	if v, ok := rc.mutation.Name(); ok {
-		if err := repository.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Repository.name": %w`, err)}
-		}
-	}
 	if _, ok := rc.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Repository.description"`)}
-	}
-	if v, ok := rc.mutation.Description(); ok {
-		if err := repository.DescriptionValidator(v); err != nil {
-			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Repository.description": %w`, err)}
-		}
 	}
 	if _, ok := rc.mutation.URL(); !ok {
 		return &ValidationError{Name: "URL", err: errors.New(`ent: missing required field "Repository.URL"`)}
 	}
-	if v, ok := rc.mutation.URL(); ok {
-		if err := repository.URLValidator(v); err != nil {
-			return &ValidationError{Name: "URL", err: fmt.Errorf(`ent: validator failed for field "Repository.URL": %w`, err)}
-		}
-	}
 	if _, ok := rc.mutation.Language(); !ok {
 		return &ValidationError{Name: "language", err: errors.New(`ent: missing required field "Repository.language"`)}
-	}
-	if v, ok := rc.mutation.Language(); ok {
-		if err := repository.LanguageValidator(v); err != nil {
-			return &ValidationError{Name: "language", err: fmt.Errorf(`ent: validator failed for field "Repository.language": %w`, err)}
-		}
 	}
 	if _, ok := rc.mutation.OpenIssuesCount(); !ok {
 		return &ValidationError{Name: "open_issues_count", err: errors.New(`ent: missing required field "Repository.open_issues_count"`)}
@@ -246,15 +226,15 @@ func (rc *RepositoryCreate) createSpec() (*Repository, *sqlgraph.CreateSpec) {
 		_spec.SetField(repository.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := rc.mutation.CommitsIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.GitCommitsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   repository.CommitsTable,
-			Columns: []string{repository.CommitsColumn},
+			Table:   repository.GitCommitsTable,
+			Columns: []string{repository.GitCommitsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(commit.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(gitcommit.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

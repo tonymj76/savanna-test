@@ -6,8 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Commit is the predicate function for commit builders.
-type Commit func(*sql.Selector)
+// GitCommit is the predicate function for gitcommit builders.
+type GitCommit func(*sql.Selector)
 
 // Repository is the predicate function for repository builders.
 type Repository func(*sql.Selector)

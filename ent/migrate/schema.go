@@ -8,23 +8,23 @@ import (
 )
 
 var (
-	// CommitsColumns holds the columns for the "commits" table.
-	CommitsColumns = []*schema.Column{
+	// GitCommitsColumns holds the columns for the "git_commits" table.
+	GitCommitsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "author", Type: field.TypeJSON},
 		{Name: "url", Type: field.TypeString},
 		{Name: "date", Type: field.TypeTime},
-		{Name: "repository_commits", Type: field.TypeInt, Nullable: true},
+		{Name: "repository_git_commits", Type: field.TypeInt, Nullable: true},
 	}
-	// CommitsTable holds the schema information for the "commits" table.
-	CommitsTable = &schema.Table{
-		Name:       "commits",
-		Columns:    CommitsColumns,
-		PrimaryKey: []*schema.Column{CommitsColumns[0]},
+	// GitCommitsTable holds the schema information for the "git_commits" table.
+	GitCommitsTable = &schema.Table{
+		Name:       "git_commits",
+		Columns:    GitCommitsColumns,
+		PrimaryKey: []*schema.Column{GitCommitsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "commits_repositories_commits",
-				Columns:    []*schema.Column{CommitsColumns[4]},
+				Symbol:     "git_commits_repositories_gitCommits",
+				Columns:    []*schema.Column{GitCommitsColumns[4]},
 				RefColumns: []*schema.Column{RepositoriesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -33,7 +33,7 @@ var (
 	// RepositoriesColumns holds the columns for the "repositories" table.
 	RepositoriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
 		{Name: "url", Type: field.TypeString},
 		{Name: "language", Type: field.TypeString},
@@ -52,11 +52,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		CommitsTable,
+		GitCommitsTable,
 		RepositoriesTable,
 	}
 )
 
 func init() {
-	CommitsTable.ForeignKeys[0].RefTable = RepositoriesTable
+	GitCommitsTable.ForeignKeys[0].RefTable = RepositoriesTable
 }
