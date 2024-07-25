@@ -14,17 +14,11 @@ type (
 		ForksCount      int    `json:"forks_count"`
 	}
 
-	Commit struct {
-		Date   string `json:"date"`
-		Url    string `json:"url"`
-		Author Author `json:"author"`
+	GitCommit struct {
+		Date   string         `json:"date"`
+		Url    string         `json:"url"`
+		Commit map[string]any `json:"commit"`
 	}
 
-	Author struct {
-		Login string `json:"login"`
-		Id    int    `json:"id"`
-		Url   string `json:"url"`
-	}
-
-	Commits []*Commit
+	Commits []*GitCommit
 )

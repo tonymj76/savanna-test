@@ -20,9 +20,9 @@ type GitCommitCreate struct {
 	hooks    []Hook
 }
 
-// SetAuthor sets the "author" field.
-func (gcc *GitCommitCreate) SetAuthor(a any) *GitCommitCreate {
-	gcc.mutation.SetAuthor(a)
+// SetGitcommit sets the "gitcommit" field.
+func (gcc *GitCommitCreate) SetGitcommit(a any) *GitCommitCreate {
+	gcc.mutation.SetGitcommit(a)
 	return gcc
 }
 
@@ -72,8 +72,8 @@ func (gcc *GitCommitCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (gcc *GitCommitCreate) check() error {
-	if _, ok := gcc.mutation.Author(); !ok {
-		return &ValidationError{Name: "author", err: errors.New(`ent: missing required field "GitCommit.author"`)}
+	if _, ok := gcc.mutation.Gitcommit(); !ok {
+		return &ValidationError{Name: "gitcommit", err: errors.New(`ent: missing required field "GitCommit.gitcommit"`)}
 	}
 	if _, ok := gcc.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "GitCommit.url"`)}
@@ -107,9 +107,9 @@ func (gcc *GitCommitCreate) createSpec() (*GitCommit, *sqlgraph.CreateSpec) {
 		_node = &GitCommit{config: gcc.config}
 		_spec = sqlgraph.NewCreateSpec(gitcommit.Table, sqlgraph.NewFieldSpec(gitcommit.FieldID, field.TypeInt))
 	)
-	if value, ok := gcc.mutation.Author(); ok {
-		_spec.SetField(gitcommit.FieldAuthor, field.TypeJSON, value)
-		_node.Author = value
+	if value, ok := gcc.mutation.Gitcommit(); ok {
+		_spec.SetField(gitcommit.FieldGitcommit, field.TypeJSON, value)
+		_node.Gitcommit = value
 	}
 	if value, ok := gcc.mutation.URL(); ok {
 		_spec.SetField(gitcommit.FieldURL, field.TypeString, value)

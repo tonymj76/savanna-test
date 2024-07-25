@@ -13,7 +13,7 @@ type GitCommit struct {
 // Fields of the GitCommit.
 func (GitCommit) Fields() []ent.Field {
 	return []ent.Field{
-		field.Any("author"),
+		field.Any("gitcommit"),
 		field.String("url"),
 		field.Time("date"),
 	}

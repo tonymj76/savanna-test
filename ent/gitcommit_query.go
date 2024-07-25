@@ -262,12 +262,12 @@ func (gcq *GitCommitQuery) Clone() *GitCommitQuery {
 // Example:
 //
 //	var v []struct {
-//		Author any `json:"author,omitempty"`
+//		Gitcommit any `json:"gitcommit,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.GitCommit.Query().
-//		GroupBy(gitcommit.FieldAuthor).
+//		GroupBy(gitcommit.FieldGitcommit).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (gcq *GitCommitQuery) GroupBy(field string, fields ...string) *GitCommitGroupBy {
@@ -285,11 +285,11 @@ func (gcq *GitCommitQuery) GroupBy(field string, fields ...string) *GitCommitGro
 // Example:
 //
 //	var v []struct {
-//		Author any `json:"author,omitempty"`
+//		Gitcommit any `json:"gitcommit,omitempty"`
 //	}
 //
 //	client.GitCommit.Query().
-//		Select(gitcommit.FieldAuthor).
+//		Select(gitcommit.FieldGitcommit).
 //		Scan(ctx, &v)
 func (gcq *GitCommitQuery) Select(fields ...string) *GitCommitSelect {
 	gcq.ctx.Fields = append(gcq.ctx.Fields, fields...)

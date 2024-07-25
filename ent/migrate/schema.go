@@ -11,7 +11,7 @@ var (
 	// GitCommitsColumns holds the columns for the "git_commits" table.
 	GitCommitsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "author", Type: field.TypeJSON},
+		{Name: "gitcommit", Type: field.TypeJSON},
 		{Name: "url", Type: field.TypeString},
 		{Name: "date", Type: field.TypeTime},
 		{Name: "repository_git_commits", Type: field.TypeInt, Nullable: true},

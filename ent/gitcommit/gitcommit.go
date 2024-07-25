@@ -11,8 +11,8 @@ const (
 	Label = "git_commit"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldAuthor holds the string denoting the author field in the database.
-	FieldAuthor = "author"
+	// FieldGitcommit holds the string denoting the gitcommit field in the database.
+	FieldGitcommit = "gitcommit"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
 	// FieldDate holds the string denoting the date field in the database.
@@ -24,7 +24,7 @@ const (
 // Columns holds all SQL columns for gitcommit fields.
 var Columns = []string{
 	FieldID,
-	FieldAuthor,
+	FieldGitcommit,
 	FieldURL,
 	FieldDate,
 }

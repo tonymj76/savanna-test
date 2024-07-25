@@ -35,7 +35,7 @@ type GitCommitMutation struct {
 	op            Op
 	typ           string
 	id            *int
-	author        *any
+	gitcommit     *any
 	url           *string
 	date          *time.Time
 	clearedFields map[string]struct{}
@@ -142,40 +142,40 @@ func (m *GitCommitMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetAuthor sets the "author" field.
-func (m *GitCommitMutation) SetAuthor(a any) {
-	m.author = &a
+// SetGitcommit sets the "gitcommit" field.
+func (m *GitCommitMutation) SetGitcommit(a any) {
+	m.gitcommit = &a
 }
 
-// Author returns the value of the "author" field in the mutation.
-func (m *GitCommitMutation) Author() (r any, exists bool) {
-	v := m.author
+// Gitcommit returns the value of the "gitcommit" field in the mutation.
+func (m *GitCommitMutation) Gitcommit() (r any, exists bool) {
+	v := m.gitcommit
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAuthor returns the old "author" field's value of the GitCommit entity.
+// OldGitcommit returns the old "gitcommit" field's value of the GitCommit entity.
 // If the GitCommit object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GitCommitMutation) OldAuthor(ctx context.Context) (v any, err error) {
+func (m *GitCommitMutation) OldGitcommit(ctx context.Context) (v any, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAuthor is only allowed on UpdateOne operations")
+		return v, errors.New("OldGitcommit is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAuthor requires an ID field in the mutation")
+		return v, errors.New("OldGitcommit requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAuthor: %w", err)
+		return v, fmt.Errorf("querying old value for OldGitcommit: %w", err)
 	}
-	return oldValue.Author, nil
+	return oldValue.Gitcommit, nil
 }
 
-// ResetAuthor resets all changes to the "author" field.
-func (m *GitCommitMutation) ResetAuthor() {
-	m.author = nil
+// ResetGitcommit resets all changes to the "gitcommit" field.
+func (m *GitCommitMutation) ResetGitcommit() {
+	m.gitcommit = nil
 }
 
 // SetURL sets the "url" field.
@@ -285,8 +285,8 @@ func (m *GitCommitMutation) Type() string {
 // AddedFields().
 func (m *GitCommitMutation) Fields() []string {
 	fields := make([]string, 0, 3)
-	if m.author != nil {
-		fields = append(fields, gitcommit.FieldAuthor)
+	if m.gitcommit != nil {
+		fields = append(fields, gitcommit.FieldGitcommit)
 	}
 	if m.url != nil {
 		fields = append(fields, gitcommit.FieldURL)
@@ -302,8 +302,8 @@ func (m *GitCommitMutation) Fields() []string {
 // schema.
 func (m *GitCommitMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case gitcommit.FieldAuthor:
-		return m.Author()
+	case gitcommit.FieldGitcommit:
+		return m.Gitcommit()
 	case gitcommit.FieldURL:
 		return m.URL()
 	case gitcommit.FieldDate:
@@ -317,8 +317,8 @@ func (m *GitCommitMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *GitCommitMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case gitcommit.FieldAuthor:
-		return m.OldAuthor(ctx)
+	case gitcommit.FieldGitcommit:
+		return m.OldGitcommit(ctx)
 	case gitcommit.FieldURL:
 		return m.OldURL(ctx)
 	case gitcommit.FieldDate:
@@ -332,12 +332,12 @@ func (m *GitCommitMutation) OldField(ctx context.Context, name string) (ent.Valu
 // type.
 func (m *GitCommitMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case gitcommit.FieldAuthor:
+	case gitcommit.FieldGitcommit:
 		v, ok := value.(any)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAuthor(v)
+		m.SetGitcommit(v)
 		return nil
 	case gitcommit.FieldURL:
 		v, ok := value.(string)
@@ -402,8 +402,8 @@ func (m *GitCommitMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *GitCommitMutation) ResetField(name string) error {
 	switch name {
-	case gitcommit.FieldAuthor:
-		m.ResetAuthor()
+	case gitcommit.FieldGitcommit:
+		m.ResetGitcommit()
 		return nil
 	case gitcommit.FieldURL:
 		m.ResetURL()

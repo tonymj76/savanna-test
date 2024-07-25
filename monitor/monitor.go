@@ -30,7 +30,11 @@ func fetchAndSaveMonitoredRepoData(h *handlers.RestService) {
 	defer cancel()
 	fmt.Println("yes am working")
 	// Select most recent entry in DB
-	commitDate, err := h.DB.GitCommit.Query().Order(ent.Desc(gitcommit.FieldDate)).Limit(1).Select(gitcommit.FieldDate).String(ctx)
+	commitDate, err := h.DB.GitCommit.Query().
+		Order(ent.Desc(gitcommit.FieldDate)).
+		Limit(1).
+		Select(gitcommit.FieldDate).
+		String(ctx)
 	if err != nil {
 		log.Println("Error fetching repo info:", err)
 		return
@@ -48,7 +52,7 @@ func fetchAndSaveMonitoredRepoData(h *handlers.RestService) {
 		saveCommit, err := h.DB.GitCommit.Create().
 			SetURL(commit.Url).
 			SetDate(time.Now()).
-			SetAuthor(commit.Author).
+			SetGitcommit(commit.Commit).
 			Save(ctx)
 
 		if err != nil {
@@ -57,7 +61,9 @@ func fetchAndSaveMonitoredRepoData(h *handlers.RestService) {
 		}
 		dataCommits = append(dataCommits, saveCommit)
 	}
-	entRepo, err := h.DB.Repository.Query().Where(repository.Name(config.GetEnv("repo_name", "savanna-test"))).Only(ctx)
+	entRepo, err := h.DB.Repository.Query().
+		Where(repository.Name(config.GetEnv("repo_name", "savanna-test"))).
+		Only(ctx)
 	if err != nil {
 		log.Println("Error fetching repo info:", err)
 		return

@@ -40,7 +40,12 @@ func (s *GitHubService) FetchRepoInfo() (*models.Repository, error) {
 }
 
 func (s *GitHubService) FetchCommits(since string) (models.Commits, error) {
-	url := fmt.Sprintf("%s/commits?since=%s", URL, since)
+	var url string
+	if since == "" || since == " " {
+		url = fmt.Sprintf("%s/commits", URL)
+	} else {
+		url = fmt.Sprintf("%s/commits?since=%s", URL, since)
+	}
 	resp, err := s.Client.Get(url)
 	if err != nil {
 		return nil, err

@@ -28,7 +28,7 @@ func (h *RestService) FetchAndSaveRepoData(c *gin.Context) {
 		saveCommit, err := h.DB.GitCommit.Create().
 			SetURL(commit.Url).
 			SetDate(time.Now()).
-			SetAuthor(commit.Author).
+			SetGitcommit(commit.Commit).
 			Save(c)
 
 		if err != nil {

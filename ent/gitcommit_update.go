@@ -28,9 +28,9 @@ func (gcu *GitCommitUpdate) Where(ps ...predicate.GitCommit) *GitCommitUpdate {
 	return gcu
 }
 
-// SetAuthor sets the "author" field.
-func (gcu *GitCommitUpdate) SetAuthor(a any) *GitCommitUpdate {
-	gcu.mutation.SetAuthor(a)
+// SetGitcommit sets the "gitcommit" field.
+func (gcu *GitCommitUpdate) SetGitcommit(a any) *GitCommitUpdate {
+	gcu.mutation.SetGitcommit(a)
 	return gcu
 }
 
@@ -103,8 +103,8 @@ func (gcu *GitCommitUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := gcu.mutation.Author(); ok {
-		_spec.SetField(gitcommit.FieldAuthor, field.TypeJSON, value)
+	if value, ok := gcu.mutation.Gitcommit(); ok {
+		_spec.SetField(gitcommit.FieldGitcommit, field.TypeJSON, value)
 	}
 	if value, ok := gcu.mutation.URL(); ok {
 		_spec.SetField(gitcommit.FieldURL, field.TypeString, value)
@@ -132,9 +132,9 @@ type GitCommitUpdateOne struct {
 	mutation *GitCommitMutation
 }
 
-// SetAuthor sets the "author" field.
-func (gcuo *GitCommitUpdateOne) SetAuthor(a any) *GitCommitUpdateOne {
-	gcuo.mutation.SetAuthor(a)
+// SetGitcommit sets the "gitcommit" field.
+func (gcuo *GitCommitUpdateOne) SetGitcommit(a any) *GitCommitUpdateOne {
+	gcuo.mutation.SetGitcommit(a)
 	return gcuo
 }
 
@@ -237,8 +237,8 @@ func (gcuo *GitCommitUpdateOne) sqlSave(ctx context.Context) (_node *GitCommit, 
 			}
 		}
 	}
-	if value, ok := gcuo.mutation.Author(); ok {
-		_spec.SetField(gitcommit.FieldAuthor, field.TypeJSON, value)
+	if value, ok := gcuo.mutation.Gitcommit(); ok {
+		_spec.SetField(gitcommit.FieldGitcommit, field.TypeJSON, value)
 	}
 	if value, ok := gcuo.mutation.URL(); ok {
 		_spec.SetField(gitcommit.FieldURL, field.TypeString, value)

@@ -18,8 +18,8 @@ type GitCommit struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Author holds the value of the "author" field.
-	Author any `json:"author,omitempty"`
+	// Gitcommit holds the value of the "gitcommit" field.
+	Gitcommit any `json:"gitcommit,omitempty"`
 	// URL holds the value of the "url" field.
 	URL string `json:"url,omitempty"`
 	// Date holds the value of the "date" field.
@@ -33,7 +33,7 @@ func (*GitCommit) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case gitcommit.FieldAuthor:
+		case gitcommit.FieldGitcommit:
 			values[i] = new([]byte)
 		case gitcommit.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -64,12 +64,12 @@ func (gc *GitCommit) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			gc.ID = int(value.Int64)
-		case gitcommit.FieldAuthor:
+		case gitcommit.FieldGitcommit:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field author", values[i])
+				return fmt.Errorf("unexpected type %T for field gitcommit", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &gc.Author); err != nil {
-					return fmt.Errorf("unmarshal field author: %w", err)
+				if err := json.Unmarshal(*value, &gc.Gitcommit); err != nil {
+					return fmt.Errorf("unmarshal field gitcommit: %w", err)
 				}
 			}
 		case gitcommit.FieldURL:
@@ -127,8 +127,8 @@ func (gc *GitCommit) String() string {
 	var builder strings.Builder
 	builder.WriteString("GitCommit(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", gc.ID))
-	builder.WriteString("author=")
-	builder.WriteString(fmt.Sprintf("%v", gc.Author))
+	builder.WriteString("gitcommit=")
+	builder.WriteString(fmt.Sprintf("%v", gc.Gitcommit))
 	builder.WriteString(", ")
 	builder.WriteString("url=")
 	builder.WriteString(gc.URL)
