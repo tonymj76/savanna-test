@@ -15,7 +15,8 @@ To run the application please have docker and docker-compose install
 ## Next Step
  - Check the DB for the data gotten from the public repo
  - I added a short video to show how to use the app
-   [![Setting Up and Testing a Repository Walkthrough](https://asciinema.org/a/113463.png)](https://www.loom.com/share/3ac935279b1849f1ade1cd5ff6e4ba71?sid=56f27b8d-e739-46bb-85a9-c55f1c23a0ad)
+
+[![Setting Up and Testing a Repository Walkthrough](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)](https://www.loom.com/share/3ac935279b1849f1ade1cd5ff6e4ba71?sid=56f27b8d-e739-46bb-85a9-c55f1c23a0ad)
 
 
 
